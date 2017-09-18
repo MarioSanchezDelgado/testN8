@@ -2,15 +2,50 @@
 <head> 
 <title>JavaScript calendar</title>
 <script> 
- 
+
+var mHolidays = [];
+var mDescHoliday = []
+
+
+var isHoliday = function(month, year, country){
+	var mMonth = month + 1;
+	var url = "https://holidayapi.com/v1/holidays?key=8473506f-6880-4d91-babf-971e1896d07a&country=" + country 
+	+ "&year=" + year + "&month=" + mMonth;
+
+	var xhr = new XMLHttpRequest();
+    mHolidays = [];
+	mDescHoliday = [];
+	xhr.dataType = 'jsonp';
+	
+    xhr.onload = function() {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+		var jsonResponse = xhr.responseText;
+		var objeto_json = JSON.parse(jsonResponse);
+		var holidays = objeto_json.holidays;
+
+		for(var i = 0; i < holidays.length; i++){
+			mHolidays[i] = Number(holidays[i].date.substring(8,10));
+			mDescHoliday[i] = holidays[i].name;
+
+		}
+      }
+    };
+    
+	xhr.open('GET', url, false);
+	xhr.send();
+
+}
+
 function displayCalendar(){
+ 
+ 
  var htmlContent ="";
  var FebNumberOfDays ="";
  
  var dateNow = new Date(localStorage.getItem("stoStartDate"));
  var country = localStorage.getItem("stoCountryCode");
  var month = dateNow.getMonth();
- var nextMonth = month+1; //+1; //Used to match up the current month with the correct start date.
+ var nextMonth = month+1;  //Used to match up the current month with the correct start date.
  var day = dateNow.getDate();
  var counter = day;
  var year = dateNow.getFullYear();
@@ -61,7 +96,22 @@ function displayCalendar(){
         htmlContent += "</tr><tr>";
     }
 	
- if (weekdays2 == 7 || weekdays2 == 1){
+    // if counter is current day.
+    // highlight current day using the CSS defined in header.
+
+	var mHolidayLength = mHolidays.length;
+	var mDescHolidayNow;
+	for (var j = 0; j < mHolidayLength; j++ ){
+
+		if(mHolidays[j] == counter)
+			var isAHoliday = 1;
+			mDescHolidayNow = mDescHoliday[j];
+	}
+	if(isAHoliday == 1)
+	{
+		htmlContent +="<td class='Holiday' title=" + mDescHolidayNow + " id='hHoliday'>"+counter+"</td>";
+	}
+    else if (weekdays2 == 7 || weekdays2 == 1){
         htmlContent +="<td class='weekendDay'>"+counter+"</td>";
     }else{
         htmlContent +="<td class='monthNow'>"+counter+"</td>";
@@ -120,14 +170,13 @@ function displayCalendar(){
 		}
 		calendarBody += htmlContent;
 	}
-	
  }
- 
+
  // set the content of div .
  document.getElementById("calendar").innerHTML=calendarBody;
-} 
- 
-</script>
+}
+
+</script> 
 </head> 
  
 <body onload="displayCalendar()"> 
