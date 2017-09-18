@@ -2,6 +2,131 @@
 <head> 
 <title>JavaScript calendar</title>
 <script> 
+ 
+function displayCalendar(){
+ var htmlContent ="";
+ var FebNumberOfDays ="";
+ 
+ var dateNow = new Date(localStorage.getItem("stoStartDate"));
+ var country = localStorage.getItem("stoCountryCode");
+ var month = dateNow.getMonth();
+ var nextMonth = month+1; //+1; //Used to match up the current month with the correct start date.
+ var day = dateNow.getDate();
+ var counter = day;
+ var year = dateNow.getFullYear();
+ 
+ 
+ //Determing if February (28,or 29)  
+ if (month == 1){
+    if ( (year%100!=0) && (year%4==0) || (year%400==0)){
+      FebNumberOfDays = 29;
+    }else{
+      FebNumberOfDays = 28;
+    }
+ }
+ 
+ 
+ // names of months and week days.
+ var monthNames = ["January","February","March","April","May","June","July","August","September","October","November", "December"];
+ var dayNames = ["S","M","T","W","T","F","S"];
+ var dayPerMonth = ["31", ""+FebNumberOfDays+"","31","30","31","30","31","31","30","31","30","31"]
+ 
+ 
+ // days in previous month and next one , and day of week.
+ var nextDate = new Date(nextMonth +' 1 ,'+year);
+ var weekdays= nextDate.getDay();
+ var weekdays2 = weekdays;
+ var weekdays3;
+ var numOfDays = localStorage.getItem("stoNbrDays");
+     
+ 
+ // this leave a white space for days of previous month.
+ while (weekdays > 1){
+    htmlContent += "<td class='monthPre'></td>";
+ 
+ // used in next loop.
+     weekdays--;
+ }
+ 
+ var calendarBody ="<table class='calendar'><tr class='dayNames'>  <td>S</td>  <td>M</td> <td>T</td>"+
+ "<td>W</td> <td>T</td> <td>F</td> <td>S</td> </tr>";
+ calendarBody += "<tr class='monthNow'><th colspan='7'>"+ monthNames[month] + " " + year +"</th></tr>";
+ // loop to build the calander body.
+ isHoliday(month, year, country);
+ while (numOfDays-- > 0){
+	
+     // When to start new line.
+    if (weekdays2 > 7){
+        weekdays2 = 1;
+        htmlContent += "</tr><tr>";
+    }
+	
+ if (weekdays2 == 7 || weekdays2 == 1){
+        htmlContent +="<td class='weekendDay'>"+counter+"</td>";
+    }else{
+        htmlContent +="<td class='monthNow'>"+counter+"</td>";
+    }
+    isAHoliday = 0;
+	
+    weekdays2++;
+	counter++;
+	//Determing if February (28,or 29)  
+	if (month == 1){
+		if ( (year%100!=0) && (year%4==0) || (year%400==0)){
+		  FebNumberOfDays = 29;
+		}else{
+		  FebNumberOfDays = 28;
+		}
+		dayPerMonth[month] = FebNumberOfDays;
+	}
+			 
+	if (counter > dayPerMonth[month] && numOfDays > 0){
+		counter = 1;
+		
+		//weekdays2++;
+		weekdays = weekdays2;
+		weekdays3 = weekdays;
+		while (weekdays3 < 8){
+			htmlContent += "<td class='monthPre'></td>";
+			weekdays3++;
+		}
+		calendarBody += htmlContent;
+		htmlContent = "";
+		month++
+		isHoliday(month, year, country);
+		if(month > 11){
+			month = 0;
+			year++;
+		}
+		
+		calendarBody += "<tr><th colspan='7'></th></tr><tr class='monthNow'><th colspan='7'>"+ monthNames[month] + " " + year + "</th></tr>";
+		while (weekdays>1 && weekdays < 8){
+			htmlContent += "<td class='monthPre'></td>";
+
+			// used in next loop.
+			weekdays--;
+		}
+		weekdays = weekdays2;
+		calendarBody += htmlContent;
+		htmlContent = "";
+	}
+    
+	//numOfDays--;
+	if(numOfDays == 0){
+		weekdays3 = weekdays2;
+		while (weekdays3 > 1 && weekdays3 < 8){
+			htmlContent += "<td class='monthPre'></td>";
+			weekdays3++;
+		}
+		calendarBody += htmlContent;
+	}
+	
+ }
+ 
+ // set the content of div .
+ document.getElementById("calendar").innerHTML=calendarBody;
+} 
+ 
 </script>
 </head> 
  
