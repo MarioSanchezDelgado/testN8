@@ -1,7 +1,17 @@
 <html>
 <head> 
 <title>Test Mario Sanchez - Number 8</title>
-
+<script type="text/javascript" language="JavaScript">
+    function processClick(){
+		var i1 = document.getElementById("startDate").value;
+		localStorage.setItem("stoStartDate",i1);
+		var i2 = document.getElementById("nbrDays").value;
+		localStorage.setItem("stoNbrDays",i2);
+		var i3 = document.getElementById("countryCode").value;
+		localStorage.setItem("stoCountryCode",i3);
+		window.location.href = 'https://mariosanchezdelgado.github.io/testN8/holiday.html';
+	}
+</script>
 </head>
 
 <body> 
